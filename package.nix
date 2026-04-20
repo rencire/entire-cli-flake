@@ -16,12 +16,14 @@ buildGoModule (finalAttrs: {
   src = fetchFromGitHub {
     owner = "entireio";
     repo = "cli";
-    rev = "90bb1c503f8fdaaecc49c181e1c68a2f63bdb441";
+    tag = "v${finalAttrs.version}";
     hash = "sha256-3sFQix4tabTs5imJCRh28azQdaUMGdVyfFxdGGqKJCg=";
   };
 
   vendorHash = "sha256-PkSN+ynGo6xW9IDoc+rX4NMt7R/d5Who0N56QyQxzl8=";
 
+  # Nixpkgs currently ships Go 1.26.1, but upstream's go.mod requires 1.26.2.
+  # Patch the module directive so buildGoModule can build this release cleanly.
   postPatch = ''
     substituteInPlace go.mod --replace-fail "go 1.26.2" "go 1.26.1"
   '';
@@ -31,8 +33,8 @@ buildGoModule (finalAttrs: {
   ldflags = [
     "-s"
     "-w"
-    "-X=github.com/entireio/cli/cmd/entire/cli/buildinfo.Version=${finalAttrs.version}"
-    "-X=github.com/entireio/cli/cmd/entire/cli/buildinfo.Commit=${finalAttrs.src.rev}"
+    "-X=github.com/entireio/cli/cmd/entire/cli/versioninfo.Version=${finalAttrs.version}"
+    "-X=github.com/entireio/cli/cmd/entire/cli/versioninfo.Commit=${finalAttrs.src.rev}"
   ];
 
   nativeBuildInputs = [

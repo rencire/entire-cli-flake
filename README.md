@@ -52,5 +52,5 @@ nix run github:rencire/entire-cli-flake#entire -- --help
 
 When upstream releases a new version:
 
-1. Update `version`, `rev`, and `hash` in [`package.nix`](./package.nix).
+1. Update `version` and `hash` in [`package.nix`](./package.nix).
 2. Rebuild to refresh `vendorHash`.
