@@ -4,28 +4,27 @@ Minimal Nix flake for packaging [entireio/cli](https://github.com/entireio/cli).
 
 ## Use
 
-Build and run locally:
-
-```bash
-nix build
-./result/bin/entire --help
-```
-
-Run directly from the local flake:
-
-```bash
-nix run .# -- --help
-nix run .#entire -- --help
-```
-
-Run without cloning the repo:
+Run it without cloning the repo:
 
 ```bash
 nix run github:rencire/entire-cli-flake -- --help
 nix run github:rencire/entire-cli-flake#entire -- --help
 ```
 
-## Use From Another Flake
+Run it from a local checkout:
+
+```bash
+nix run .# -- --help
+nix run .#entire -- --help
+```
+
+## Use in Another Flake
+
+Agent prompt for wiring this flake into a consumer project:
+
+> Add `entire-cli-flake` as a flake input, expose `packages.${system}.entire` from the consumer flake, and include the package in the default dev shell.
+
+Example code:
 
 ```nix
 {
@@ -46,6 +45,15 @@ nix run github:rencire/entire-cli-flake#entire -- --help
       };
     };
 }
+```
+
+## Build
+
+Build and run locally if you want the installed symlink instead of `nix run`:
+
+```bash
+nix build
+./result/bin/entire --help
 ```
 
 ## Update

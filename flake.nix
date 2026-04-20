@@ -39,6 +39,12 @@
           };
         });
 
+      formatter = eachSystem (system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+        in
+        pkgs.nixpkgs-fmt);
+
       devShells = eachSystem (system:
         let
           pkgs = import nixpkgs { inherit system; };
