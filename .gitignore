@@ -1,0 +1,9 @@
+/result
+/result-*
+.DS_Store
+/.agents
+/.direnv
+/.devenv
+/.envrc
+*.swp
+*~
