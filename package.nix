@@ -11,16 +11,16 @@
 
 buildGoModule (finalAttrs: {
   pname = "entire";
-  version = "0.5.5";
+  version = "0.6.1";
 
   src = fetchFromGitHub {
     owner = "entireio";
     repo = "cli";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-3sFQix4tabTs5imJCRh28azQdaUMGdVyfFxdGGqKJCg=";
+    hash = "sha256-VfuzYSFgH6cW80SYtkhaNeiNYFAOHbcFX9jdr/rDqSw=";
   };
 
-  vendorHash = "sha256-PkSN+ynGo6xW9IDoc+rX4NMt7R/d5Who0N56QyQxzl8=";
+  vendorHash = "sha256-GhFH/y781RIRZ7+r79Wsw8x0/ZmTnv0g9GHtESn5zSA=";
 
   # Nixpkgs currently ships Go 1.26.1, but upstream's go.mod requires 1.26.2.
   # Patch the module directive so buildGoModule can build this release cleanly.
