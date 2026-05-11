@@ -24,6 +24,9 @@ buildGoModule (finalAttrs: {
 
   # Nixpkgs currently ships Go 1.26.1, but upstream's go.mod requires 1.26.2.
   # Patch the module directive so buildGoModule can build this release cleanly.
+  # To remove: delete this postPatch block and the "Recompute vendorHash" step
+  # in .github/workflows/update-hashes.yml once nixpkgs-unstable ships Go >=
+  # the version required by upstream's go.mod.
   postPatch = ''
     substituteInPlace go.mod --replace-fail "go 1.26.2" "go 1.26.1"
   '';
