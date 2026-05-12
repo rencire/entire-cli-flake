@@ -1,0 +1,7 @@
+{
+  "enabled": true,
+  "strategy_options": {
+    "checkpoint_remote": "github:rencire/entire-cli-flake-checkpoints"
+  },
+  "telemetry": false
+}
