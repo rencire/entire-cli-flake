@@ -6,7 +6,7 @@
       agents = [ "opencode" ];
       checkpoint_remote = {
         provider = "github";
-        repo = "rencire/wofr-checkpoints";
+        repo = "rencire/checkpoints";
       };
     };
   };
