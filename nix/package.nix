@@ -4,7 +4,6 @@
   fetchFromGitHub,
   installShellFiles,
   git,
-  makeWrapper,
   stdenv,
   writableTmpDirAsHomeHook,
 }:
@@ -22,28 +21,15 @@ buildGoModule (finalAttrs: {
 
   vendorHash = "sha256-GhFH/y781RIRZ7+r79Wsw8x0/ZmTnv0g9GHtESn5zSA=";
 
-  # Nixpkgs currently ships Go 1.26.1, but upstream's go.mod requires 1.26.2.
-  # Patch the module directive so buildGoModule can build this release cleanly.
-  # To remove: delete this postPatch block and the "Recompute vendorHash" step
-  # in .github/workflows/update-hashes.yml once nixpkgs-unstable ships Go >=
-  # the version required by upstream's go.mod.
-  postPatch = ''
-    substituteInPlace go.mod --replace-fail "go 1.26.2" "go 1.26.1"
-  '';
-
   subPackages = [ "cmd/entire" ];
 
   ldflags = [
     "-s"
-    "-w"
     "-X=github.com/entireio/cli/cmd/entire/cli/versioninfo.Version=${finalAttrs.version}"
     "-X=github.com/entireio/cli/cmd/entire/cli/versioninfo.Commit=${finalAttrs.src.rev}"
   ];
 
-  nativeBuildInputs = [
-    installShellFiles
-    makeWrapper
-  ];
+  nativeBuildInputs = [ installShellFiles ];
 
   nativeCheckInputs = [
     git
@@ -57,11 +43,6 @@ buildGoModule (finalAttrs: {
       --zsh <($out/bin/entire completion zsh)
   '';
 
-  postFixup = ''
-    wrapProgram $out/bin/entire \
-      --prefix PATH : ${lib.makeBinPath [ git ]}
-  '';
-
   meta = {
     description = "CLI tool that captures AI agent sessions alongside git commits";
     longDescription = ''
@@ -70,7 +51,7 @@ buildGoModule (finalAttrs: {
       of how code was written in your repo.
     '';
     homepage = "https://github.com/entireio/cli";
-    changelog = "https://github.com/entireio/cli/blob/${finalAttrs.src.rev}/CHANGELOG.md";
+    changelog = "https://github.com/entireio/cli/blob/${finalAttrs.src.tag}/CHANGELOG.md";
     license = lib.licenses.mit;
     mainProgram = "entire";
   };

@@ -14,10 +14,6 @@
       url = "github:rencire/agent-skills";
       flake = false;
     };
-    entire-cli-nix = {
-      url = "github:rencire/entire-cli-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
       inputs.nixpkgs.follows = "nixpkgs";

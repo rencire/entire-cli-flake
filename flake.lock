@@ -220,26 +220,6 @@
     "entire-cli-nix": {
       "inputs": {
         "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1778542968,
-        "narHash": "sha256-kjJeTsu2ljGVKxbQfauv8ikkD4rDRek7dYkeP4oVfBI=",
-        "owner": "rencire",
-        "repo": "entire-cli-nix",
-        "rev": "d51968cfb571fbd8187187e9b409788dbe73fa7b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "rencire",
-        "repo": "entire-cli-nix",
-        "type": "github"
-      }
-    },
-    "entire-cli-nix_2": {
-      "inputs": {
-        "nixpkgs": [
           "wofr",
           "nixpkgs"
         ]
@@ -433,11 +413,11 @@
         "treefmt-nix": "treefmt-nix"
       },
       "locked": {
-        "lastModified": 1778535943,
-        "narHash": "sha256-HdCNIC9Vj7JOE26/oDnTc8W/iDi7O+TDouToU7kPzK8=",
+        "lastModified": 1778564239,
+        "narHash": "sha256-0U1FIUfSKzVnsEm+lIOxS4IIA+YodkmlLBE7zkv12zo=",
         "owner": "numtide",
         "repo": "llm-agents.nix",
-        "rev": "0707c0311b1ec6d0c048a7fea0825554e7d54302",
+        "rev": "f185c64c76f04b57f0a8a4ff7cbd4028181245bf",
         "type": "github"
       },
       "original": {
@@ -599,7 +579,6 @@
       "inputs": {
         "agent-skills": "agent-skills",
         "confix": "confix",
-        "entire-cli-nix": "entire-cli-nix",
         "flakelight": "flakelight_2",
         "llm-agents": "llm-agents",
         "nix-wrapper-modules": "nix-wrapper-modules",
@@ -685,7 +664,7 @@
       "inputs": {
         "agent-skills": "agent-skills_2",
         "confix": "confix_2",
-        "entire-cli-nix": "entire-cli-nix_2",
+        "entire-cli-nix": "entire-cli-nix",
         "flakelight": "flakelight_4",
         "llm-agents": "llm-agents_2",
         "nix-wrapper-modules": "nix-wrapper-modules_2",
