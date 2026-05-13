@@ -56,6 +56,19 @@ nix build
 ./result/bin/entire --help
 ```
 
+## Setup
+
+After cloning this repo, run the setup apps to bootstrap AI agent tooling:
+
+```bash
+nix run .#setup-entire
+nix run .#setup-gstack
+```
+
+These are one-shot setup commands — commit the generated files after running them.
+
+See `nix/config/setup-entire-config.nix` and `nix/config/setup-gstack-config.nix` to configure agents, checkpoint remotes, hosts, and team mode.
+
 ## Update
 
 When upstream releases a new version:

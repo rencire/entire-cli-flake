@@ -1,9 +1,9 @@
-{ pkgs, ... }:
 {
-  package = pkgs.wofr;
+  enable = true;
+  agents = [ "opencode" ];
   settings = {
-    entire = {
-      agents = [ "opencode" ];
+    telemetry = false;
+    strategy_options = {
       checkpoint_remote = {
         provider = "github";
         repo = "rencire/entire-cli-flake-checkpoints";
