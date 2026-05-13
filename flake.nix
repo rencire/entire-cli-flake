@@ -10,7 +10,7 @@
       url = "github:Kyure-A/agent-skills-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    personal-skills = {
+    rencire-skills = {
       url = "github:rencire/agent-skills";
       flake = false;
     };

@@ -3,7 +3,7 @@ let
   agentSkillsLib = inputs."agent-skills".lib."agent-skills";
   agentBundle = import ./agent-bundle.nix {
     inherit agentSkillsLib;
-    personalSkills = inputs."personal-skills";
+    rencireSkills = inputs."rencire-skills";
   };
   pkgs' = (pkgs.extend inputs."llm-agents".overlays.shared-nixpkgs).extend (
     _: prev: {

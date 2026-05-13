@@ -1,11 +1,11 @@
 {
   agentSkillsLib,
-  personalSkills,
+  rencireSkills,
 }:
 let
   sources = {
     shared = {
-      path = personalSkills;
+      path = rencireSkills;
       subdir = "skills";
     };
   };
