@@ -1,9 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:base"],
-  "regexManagers": [
+  "customManagers": [
     {
-      "fileMatch": ["^nix/package\\.nix$"],
+      "customType": "regex",
+      "managerFilePatterns": ["^nix/package\\.nix$"],
       "matchStrings": [
         "version = \"(?<currentValue>[\\d.]+)\""
       ],
