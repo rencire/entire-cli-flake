@@ -3,7 +3,7 @@
   "extends": ["config:base"],
   "regexManagers": [
     {
-      "fileMatch": ["^package\\.nix$"],
+      "fileMatch": ["^nix/package\\.nix$"],
       "matchStrings": [
         "version = \"(?<currentValue>[\\d.]+)\""
       ],
