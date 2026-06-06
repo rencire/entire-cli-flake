@@ -76,5 +76,6 @@ hosts, and team mode.
 When upstream releases a new version:
 
 1. Update `version` in [`nix/package.nix`](./nix/package.nix).
-2. Run `nix run nixpkgs#nix-update -- --flake default --version skip` to refresh
+2. Run `./nix/update-go-toolchain.sh` to match upstream's Go requirement.
+3. Run `nix run nixpkgs#nix-update -- --flake default --version skip` to refresh
    `hash` and `vendorHash`.

@@ -11,15 +11,18 @@
 }:
 
 let
-  go_1_26_4 = go_1_26.overrideAttrs (_: {
-    version = "1.26.4";
+  goVersion = "1.26.2";
+  goSrcHash = "sha256-LpHrtpR6lulDb7KzkmqIAu/mOm03Xf/sT4Kqnb1v1Ds=";
+
+  pinnedGo = go_1_26.overrideAttrs (_: {
+    version = goVersion;
     src = fetchurl {
-      url = "https://go.dev/dl/go1.26.4.src.tar.gz";
-      hash = "sha256-T2aKMvv8ETLmqIH7lowvHa2mMUkqM5IRc1+7JVpCYC0=";
+      url = "https://go.dev/dl/go${goVersion}.src.tar.gz";
+      hash = goSrcHash;
     };
   });
 
-  buildGoModule = buildGo126Module.override { go = go_1_26_4; };
+  buildGoModule = buildGo126Module.override { go = pinnedGo; };
 in
 buildGoModule (finalAttrs: {
   pname = "entire";
