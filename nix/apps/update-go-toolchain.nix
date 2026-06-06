@@ -7,7 +7,7 @@ let
       pkgs.nix
     ];
     text = ''
-      bun ./nix/update-go-toolchain.js
+      bun ./nix/apps/update-go-toolchain.js
     '';
   };
 in

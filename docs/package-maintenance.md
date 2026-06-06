@@ -14,8 +14,8 @@
 
 ## Overview
 
-This repo packages upstream [`entireio/cli`](https://github.com/entireio/cli)
-as the default flake package. Upstream releases are tracked by Renovate, and a
+This repo packages upstream [`entireio/cli`](https://github.com/entireio/cli) as
+the default flake package. Upstream releases are tracked by Renovate, and a
 GitHub Actions workflow repairs the Nix-specific hashes on Renovate PRs.
 
 The package update flow has three responsibilities:
@@ -67,8 +67,8 @@ version = "0.6.1";
 It compares that value against GitHub releases for `entireio/cli`, strips the
 leading `v` from release tags, and opens a PR that changes only `version`.
 
-Renovate should not update the Nix hashes. Hash refresh is handled by the
-GitHub workflow so the update is reproducible through Nix.
+Renovate should not update the Nix hashes. Hash refresh is handled by the GitHub
+workflow so the update is reproducible through Nix.
 
 ## Hash Update Workflow
 
@@ -88,8 +88,8 @@ The workflow does this in order:
 
 ## Go Toolchain Pin
 
-[`nix/update-go-toolchain.js`](../nix/update-go-toolchain.js) keeps the local Go
-source pin aligned with upstream `entire`.
+[`nix/apps/update-go-toolchain.js`](../nix/apps/update-go-toolchain.js) keeps
+the local Go source pin aligned with upstream `entire`.
 
 The updater:
 
@@ -101,9 +101,9 @@ The updater:
 6. Updates only `goVersion` and `goSrcHash` in `nix/package.nix`.
 
 The updater is exposed as a Nix app by
-[`nix/apps/update-go-toolchain.nix`](../nix/apps/update-go-toolchain.nix). The app
-declares its runtime dependencies through Nix and uses only Bun built-ins plus
-`nix hash convert`; it does not pull npm packages.
+[`nix/apps/update-go-toolchain.nix`](../nix/apps/update-go-toolchain.nix). The
+app declares its runtime dependencies through Nix and uses only Bun built-ins
+plus `nix hash convert`; it does not pull npm packages.
 
 The updater currently supports automatic Go `1.26.x` patch updates. If upstream
 `entire` moves to a new Go minor family, the updater fails clearly so the Nix
