@@ -9,7 +9,9 @@ on:
 jobs:
   update-hashes:
     # Only run on Renovate PRs (or manual dispatch for testing)
-    if: startsWith(github.head_ref, 'renovate/') || github.event_name == 'workflow_dispatch'
+    if:
+      startsWith(github.head_ref, 'renovate/') || github.event_name ==
+      'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -25,7 +27,7 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
 
       - name: Recompute srcHash and vendorHash
-        run: nix run nixpkgs#nix-update -- --flake entire --version skip
+        run: nix run nixpkgs#nix-update -- --flake default --version skip
 
       - name: Commit updated hashes
         run: |

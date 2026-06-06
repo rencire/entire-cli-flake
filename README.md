@@ -8,21 +8,20 @@ Run it without cloning the repo:
 
 ```bash
 nix run github:rencire/entire-cli-flake -- --help
-nix run github:rencire/entire-cli-flake#entire -- --help
 ```
 
 Run it from a local checkout:
 
 ```bash
 nix run .# -- --help
-nix run .#entire -- --help
 ```
 
 ## Use in Another Flake
 
 Agent prompt for wiring this flake into a consumer project:
 
-> Add `entire-cli-flake` as a flake input, expose `packages.${system}.entire` from the consumer flake, and include the package in the default dev shell.
+> Add `entire-cli-flake` as a flake input, expose `packages.${system}.entire`
+> from the consumer flake, and include the package in the default dev shell.
 
 Example code:
 
@@ -65,13 +64,17 @@ nix run .#setup-entire
 nix run .#setup-gstack
 ```
 
-These are one-shot setup commands — commit the generated files after running them.
+These are one-shot setup commands — commit the generated files after running
+them.
 
-See `nix/config/setup-entire-config.nix` and `nix/config/setup-gstack-config.nix` to configure agents, checkpoint remotes, hosts, and team mode.
+See `nix/config/setup-entire-config.nix` and
+`nix/config/setup-gstack-config.nix` to configure agents, checkpoint remotes,
+hosts, and team mode.
 
 ## Update
 
 When upstream releases a new version:
 
-1. Update `version` and `hash` in [`package.nix`](./package.nix).
-2. Rebuild to refresh `vendorHash`.
+1. Update `version` in [`nix/package.nix`](./nix/package.nix).
+2. Run `nix run nixpkgs#nix-update -- --flake default --version skip` to refresh
+   `hash` and `vendorHash`.

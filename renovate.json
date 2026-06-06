@@ -4,10 +4,8 @@
   "customManagers": [
     {
       "customType": "regex",
-      "managerFilePatterns": ["^nix/package\\.nix$"],
-      "matchStrings": [
-        "version = \"(?<currentValue>[\\d.]+)\""
-      ],
+      "managerFilePatterns": ["/^nix/package\\.nix$/"],
+      "matchStrings": ["version = \"(?<currentValue>[\\d.]+)\""],
       "depNameTemplate": "entireio/cli",
       "datasourceTemplate": "github-releases",
       "extractVersionTemplate": "^v(?<version>.*)$"
