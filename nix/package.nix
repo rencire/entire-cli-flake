@@ -1,13 +1,26 @@
-{
-  lib,
-  buildGoModule,
-  fetchFromGitHub,
-  installShellFiles,
-  git,
-  stdenv,
-  writableTmpDirAsHomeHook,
+{ lib
+, buildGo126Module
+, fetchFromGitHub
+, fetchurl
+, installShellFiles
+, git
+, go_1_26
+, stdenv
+, writableTmpDirAsHomeHook
+,
 }:
 
+let
+  go_1_26_4 = go_1_26.overrideAttrs (_: {
+    version = "1.26.4";
+    src = fetchurl {
+      url = "https://go.dev/dl/go1.26.4.src.tar.gz";
+      hash = "sha256-T2aKMvv8ETLmqIH7lowvHa2mMUkqM5IRc1+7JVpCYC0=";
+    };
+  });
+
+  buildGoModule = buildGo126Module.override { go = go_1_26_4; };
+in
 buildGoModule (finalAttrs: {
   pname = "entire";
   version = "0.6.1";
