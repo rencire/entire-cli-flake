@@ -26,7 +26,7 @@ let
 in
 buildGoModule (finalAttrs: {
   pname = "entire";
-  version = "0.6.1";
+  version = "0.7.5";
 
   src = fetchFromGitHub {
     owner = "entireio";
