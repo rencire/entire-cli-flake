@@ -79,3 +79,6 @@ When upstream releases a new version:
 2. Run `nix run .#update-go-toolchain` to match upstream's Go requirement.
 3. Run `nix run nixpkgs#nix-update -- --flake default --version skip` to refresh
    `hash` and `vendorHash`.
+
+See [`docs/package-maintenance.md`](./docs/package-maintenance.md) for the full
+Renovate, GitHub Actions, Go toolchain, and hash update workflow.
