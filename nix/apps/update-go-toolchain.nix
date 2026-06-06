@@ -3,12 +3,12 @@ let
   script = pkgs.writeShellApplication {
     name = "update-go-toolchain";
     runtimeInputs = [
-      pkgs.curl
-      pkgs.jq
+      pkgs.bun
       pkgs.nix
-      pkgs.perl
     ];
-    text = builtins.readFile ../update-go-toolchain.sh;
+    text = ''
+      bun ./nix/update-go-toolchain.js
+    '';
   };
 in
 {
