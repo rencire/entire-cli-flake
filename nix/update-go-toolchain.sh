@@ -3,7 +3,7 @@ set -euo pipefail
 
 package_file="nix/package.nix"
 
-entire_version=$(awk -F'"' '/^[[:space:]]*version = "[0-9]+\.[0-9]+\.[0-9]+";/ { print $2; exit }' "$package_file")
+entire_version=$(perl -ne 'print "$1\n" and exit if /^\s*version = "([0-9]+\.[0-9]+\.[0-9]+)";/' "$package_file")
 if [[ -z "$entire_version" ]]; then
   printf 'error: could not read entire version from %s\n' "$package_file" >&2
   exit 1
@@ -12,10 +12,9 @@ fi
 go_mod_url="https://raw.githubusercontent.com/entireio/cli/v${entire_version}/go.mod"
 go_mod=$(curl --fail --silent --show-error --location "$go_mod_url")
 
-go_version=$(awk '
-  $1 == "toolchain" && $2 ~ /^go[0-9]+\.[0-9]+\.[0-9]+$/ { sub(/^go/, "", $2); print $2; found = 1; exit }
-  $1 == "go" && $2 ~ /^[0-9]+\.[0-9]+\.[0-9]+$/ { fallback = $2 }
-  END { if (!found && fallback != "") print fallback }
+go_version=$(perl -0ne '
+  if (/^toolchain\s+go([0-9]+\.[0-9]+\.[0-9]+)$/m) { print "$1\n"; exit }
+  if (/^go\s+([0-9]+\.[0-9]+\.[0-9]+)$/m) { print "$1\n"; exit }
 ' <<< "$go_mod")
 
 if [[ -z "$go_version" ]]; then
@@ -31,16 +30,16 @@ case "$go_version" in
     ;;
 esac
 
-release_json=$(curl --fail --silent --show-error --location 'https://go.dev/dl/?mode=json&include=all')
-go_src_sha256=$(awk -v version="go${go_version}" '
-  $0 ~ "\"version\": \"" version "\"" { in_release = 1 }
-  in_release && $0 ~ "\"filename\": \"" version "\\.src\\.tar\\.gz\"" { in_file = 1 }
-  in_release && in_file && /"sha256":/ {
-    gsub(/[",]/, "", $2)
-    print $2
-    exit
-  }
-' <<< "$release_json")
+go_src_sha256=$(
+  curl --fail --silent --show-error --location 'https://go.dev/dl/?mode=json&include=all' \
+    | jq --raw-output --arg version "go${go_version}" '
+        .[]
+        | select(.version == $version)
+        | .files[]
+        | select(.filename == ($version + ".src.tar.gz"))
+        | .sha256
+      '
+)
 
 if [[ -z "$go_src_sha256" ]]; then
   printf 'error: go.dev release metadata does not list go%s.src.tar.gz\n' "$go_version" >&2
@@ -49,12 +48,9 @@ fi
 
 go_src_hash=$(nix hash convert --hash-algo sha256 --to sri "$go_src_sha256")
 
-tmp=$(mktemp)
-awk -v go_version="$go_version" -v go_src_hash="$go_src_hash" '
-  /^[[:space:]]*goVersion = "/ { print "  goVersion = \"" go_version "\";"; next }
-  /^[[:space:]]*goSrcHash = "/ { print "  goSrcHash = \"" go_src_hash "\";"; next }
-  { print }
-' "$package_file" > "$tmp"
-mv "$tmp" "$package_file"
+GO_VERSION="$go_version" GO_SRC_HASH="$go_src_hash" perl -0pi -e '
+  s/^\s*goVersion = ".*?";/  goVersion = "$ENV{GO_VERSION}";/m or die "missing goVersion assignment\n";
+  s/^\s*goSrcHash = ".*?";/  goSrcHash = "$ENV{GO_SRC_HASH}";/m or die "missing goSrcHash assignment\n";
+' "$package_file"
 
 printf 'updated Go toolchain pin for entire %s to Go %s\n' "$entire_version" "$go_version"
