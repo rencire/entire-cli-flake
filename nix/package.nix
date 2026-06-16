@@ -32,10 +32,10 @@ buildGoModule (finalAttrs: {
     owner = "entireio";
     repo = "cli";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-bCfXaFag3eS2bp+qlOWkYJpsx67b4To5AABtimeiYzg=";
+    hash = "sha256-1fwkCR54mY0mpYjP1Llv7UhL/QGVhS3N8E40Yj9Q+24=";
   };
 
-  vendorHash = "sha256-31GHWH7KdjpspNauJz3jpICf20OhtbnwXgcOjBpTL1Q=";
+  vendorHash = "sha256-CabQNkiUicHRJ9jaEllax2b4SfJ85sOq3xjpTIjt/5s=";
 
   subPackages = [ "cmd/entire" ];
 
