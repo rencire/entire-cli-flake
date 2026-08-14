@@ -1,0 +1,100 @@
+name: Update Entire
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch: {}
+
+permissions: {}
+
+concurrency:
+  group: update-entire
+  cancel-in-progress: false
+
+jobs:
+  update-entire:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ vars.ENTIRE_UPDATER_APP_ID }}
+          private-key: ${{ secrets.ENTIRE_UPDATER_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: main
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
+
+      - name: Configure Git identity
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          app_slug="${{ steps.app-token.outputs.app-slug }}"
+          user_id=$(gh api "/users/${app_slug}[bot]" --jq .id)
+          git config --global user.name "${app_slug}[bot]"
+          git config --global user.email "${user_id}+${app_slug}[bot]@users.noreply.github.com"
+          gh auth setup-git
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Check for a new stable release
+        id: release
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          latest_version=$(gh api repos/entireio/cli/releases/latest --jq .tag_name)
+          latest_version=${latest_version#v}
+          current_version=$(perl -ne 'print "$1\n" if /^  version = "([^"]+)";$/' nix/package.nix)
+          test -n "$current_version"
+          test -n "$latest_version"
+          echo "version=$latest_version" >> "$GITHUB_OUTPUT"
+          if [ "$current_version" = "$latest_version" ]; then
+            echo "update=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "update=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Skip existing or current updates
+        if: steps.release.outputs.update == 'true'
+        id: branch
+        run: |
+          branch="automation/entire-v${{ steps.release.outputs.version }}"
+          echo "name=$branch" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --heads origin "$branch"; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update package metadata
+        if: steps.release.outputs.update == 'true' && steps.branch.outputs.exists == 'false'
+        run: |
+          git switch -c "${{ steps.branch.outputs.name }}"
+          perl -0pi -e 's/^  version = "[^"]+";/  version = "${{ steps.release.outputs.version }}";/m' nix/package.nix
+          nix run .#update-go-toolchain
+          nix run nixpkgs#nix-update -- --flake default --version skip
+
+      - name: Create update pull request
+        if: steps.release.outputs.update == 'true' && steps.branch.outputs.exists == 'false'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          git add nix/package.nix
+          git diff --staged --quiet && exit 0
+          git commit -m "chore(deps): update entireio/cli to v${{ steps.release.outputs.version }}"
+          git push --set-upstream origin "${{ steps.branch.outputs.name }}"
+          gh pr create \
+            --base main \
+            --head "${{ steps.branch.outputs.name }}" \
+            --title "chore(deps): update entireio/cli to v${{ steps.release.outputs.version }}" \
+            --body "Automated update of entireio/cli and its Nix package metadata."
+          gh pr merge "${{ steps.branch.outputs.name }}" --auto --squash

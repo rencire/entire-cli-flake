@@ -17,9 +17,9 @@
 - Package maintenance: [`docs/package-maintenance.md`](docs/package-maintenance.md)
 - Release policy: [`docs/releasing.md`](docs/releasing.md)
 
-Package updates are split across Renovate and GitHub Actions: Renovate bumps the
-upstream `entire` version, `nix run .#update-go-toolchain` matches upstream's Go
-requirement, and `nix-update --flake default --version skip` refreshes Nix hashes.
+Package updates use GitHub Actions: the scheduled updater bumps the upstream
+`entire` version, runs `nix run .#update-go-toolchain`, and runs
+`nix-update --flake default --version skip` before opening an update PR.
 
 ## Local State
 

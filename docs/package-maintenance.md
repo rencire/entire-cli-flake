@@ -5,8 +5,9 @@
 - [Overview](#overview)
 - [Package Shape](#package-shape)
 - [Manual Update Workflow](#manual-update-workflow)
-- [Renovate Workflow](#renovate-workflow)
-- [Hash Update Workflow](#hash-update-workflow)
+- [Automatic Update Workflow](#automatic-update-workflow)
+- [Updater Authentication Setup](#updater-authentication-setup)
+- [PR Verification Workflow](#pr-verification-workflow)
 - [Go Toolchain Pin](#go-toolchain-pin)
 - [Failure Modes](#failure-modes)
 - [Verification](#verification)
@@ -15,16 +16,15 @@
 ## Overview
 
 This repo packages upstream [`entireio/cli`](https://github.com/entireio/cli) as
-the default flake package. Upstream releases are tracked by Renovate, and a
-GitHub Actions workflow repairs the Nix-specific hashes on Renovate PRs.
+the default flake package. A scheduled GitHub Actions workflow tracks upstream
+releases and creates complete package update PRs.
 
 The package update flow has three responsibilities:
 
-- Renovate owns the upstream `entire` version bump.
-- `nix run .#update-go-toolchain` matches the Go toolchain pin to upstream
-  `entire`'s `go.mod`.
-- `nix-update --flake default --version skip` refreshes `src.hash` and
-  `vendorHash` without changing the version.
+- The scheduled updater detects the latest stable `entire` release and updates
+  the package metadata.
+- The PR verifier runs `nix build .#` on the final update commit.
+- GitHub auto-merges an update only after the verifier check passes.
 
 ## Package Shape
 
@@ -52,41 +52,44 @@ When updating by hand:
 
 Do not use `--flake entire`; this flake exposes the package as `default`.
 
-## Renovate Workflow
+## Automatic Update Workflow
 
-[`renovate.json`](../renovate.json) uses a regex custom manager for
-`nix/package.nix` because this repo does not use a standard package-manager
-manifest for upstream `entire`.
+[`Update Entire`](../.github/workflows/update-entire.yml) runs daily and can be
+started manually with `workflow_dispatch`. It reads the latest stable GitHub
+release for `entireio/cli`, compares it with `nix/package.nix`, and exits when
+the package is current.
 
-Renovate reads:
+When an update is available, it creates an `automation/entire-vX.Y.Z` branch,
+updates `version`, `goVersion`, `goSrcHash`, `src.hash`, and `vendorHash`, then
+opens a PR with squash auto-merge enabled.
 
-```nix
-version = "0.6.1";
-```
+## Updater Authentication Setup
 
-It compares that value against GitHub releases for `entireio/cli`, strips the
-leading `v` from release tags, and immediately opens a PR that changes only
-`version`. This prevents a pending update from remaining only in Renovate's
-Dependency Dashboard.
+The updater authenticates as a private GitHub App so that its PRs trigger the
+normal `pull_request` verification workflow without manual approval. Install
+the App only on this repository and grant it `Contents: Read and write` and
+`Pull requests: Read and write` permissions.
 
-Renovate should not update the Nix hashes. Hash refresh is handled by the GitHub
-workflow so the update is reproducible through Nix.
+Store the numeric GitHub App ID as the repository variable
+`ENTIRE_UPDATER_APP_ID` and the complete generated PEM private key as the
+repository secret `ENTIRE_UPDATER_APP_PRIVATE_KEY`. Do not create an Actions
+environment for these values.
 
-## Hash Update Workflow
+Configure both values in the GitHub web UI: repository **Settings** ->
+**Secrets and variables** -> **Actions**. Use the **Secrets** tab for the
+private key and the **Variables** tab for the App ID. The private key must
+never be committed or pasted into workflow YAML.
 
-[`Update Nix hashes`](../.github/workflows/update-hashes.yml) runs on Renovate
-PRs that touch `nix/package.nix`.
+If the repository restricts allowed actions, add
+`actions/create-github-app-token@*` alongside the existing checkout and Nix
+installer entries.
 
-The workflow does this in order:
+## PR Verification Workflow
 
-1. Check out the Renovate PR branch.
-2. Run `nix run .#update-go-toolchain`.
-3. Run `nix run nixpkgs#nix-update -- --flake default --version skip`.
-4. Run `nix build .#`.
-5. Commit updated package metadata back to the PR branch when there is a diff.
-
-`--version skip` matters: Renovate already selected the upstream version, so
-`nix-update` should only recompute `src.hash` and `vendorHash`.
+[`Verify package`](../.github/workflows/update-hashes.yml) runs on package PRs
+that open or change. It only runs `nix build .#`; it never modifies the PR
+branch. Configure its `verify-package` check as required for `main` so GitHub
+auto-merges only a successful package build.
 
 ## Go Toolchain Pin
 
@@ -132,7 +135,7 @@ nix build .#
 git diff --check
 ```
 
-For a Renovate-style smoke test, temporarily change `version` in
+For an updater-style smoke test, temporarily change `version` in
 `nix/package.nix`, run `nix run .#update-go-toolchain`, inspect `goVersion` and
 `goSrcHash`, then restore the version before committing unless the version bump
 is intentional.

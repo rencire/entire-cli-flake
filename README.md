@@ -73,7 +73,9 @@ hosts, and team mode.
 
 ## Update
 
-When upstream releases a new version:
+When upstream releases a new stable version, the daily GitHub Actions updater
+opens a complete PR and auto-merges it after `nix build .#` passes. To update by
+hand:
 
 1. Update `version` in [`nix/package.nix`](./nix/package.nix).
 2. Run `nix run .#update-go-toolchain` to match upstream's Go requirement.
@@ -81,4 +83,4 @@ When upstream releases a new version:
    `hash` and `vendorHash`.
 
 See [`docs/package-maintenance.md`](./docs/package-maintenance.md) for the full
-Renovate, GitHub Actions, Go toolchain, and hash update workflow.
+GitHub Actions, Go toolchain, and hash update workflow.
