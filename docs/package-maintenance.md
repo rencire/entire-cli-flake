@@ -65,7 +65,9 @@ version = "0.6.1";
 ```
 
 It compares that value against GitHub releases for `entireio/cli`, strips the
-leading `v` from release tags, and opens a PR that changes only `version`.
+leading `v` from release tags, and immediately opens a PR that changes only
+`version`. This prevents a pending update from remaining only in Renovate's
+Dependency Dashboard.
 
 Renovate should not update the Nix hashes. Hash refresh is handled by the GitHub
 workflow so the update is reproducible through Nix.
