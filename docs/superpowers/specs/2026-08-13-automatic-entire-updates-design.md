@@ -75,7 +75,7 @@ that was built by CI.
   check.
 - Keep the Actions allowlist for `actions/checkout@*` and
   `cachix/install-nix-action@*`, and add `actions/create-github-app-token@*`.
-- Store the private GitHub App's numeric App ID as an Actions repository
+- Store the private GitHub App's Client ID as an Actions repository
   variable and its PEM private key as an Actions repository secret.
 
 ## Migration

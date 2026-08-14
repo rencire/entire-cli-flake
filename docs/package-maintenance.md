@@ -70,14 +70,14 @@ normal `pull_request` verification workflow without manual approval. Install
 the App only on this repository and grant it `Contents: Read and write` and
 `Pull requests: Read and write` permissions.
 
-Store the numeric GitHub App ID as the repository variable
-`ENTIRE_UPDATER_APP_ID` and the complete generated PEM private key as the
+Store the GitHub App Client ID as the repository variable
+`ENTIRE_UPDATER_CLIENT_ID` and the complete generated PEM private key as the
 repository secret `ENTIRE_UPDATER_APP_PRIVATE_KEY`. Do not create an Actions
 environment for these values.
 
 Configure both values in the GitHub web UI: repository **Settings** ->
 **Secrets and variables** -> **Actions**. Use the **Secrets** tab for the
-private key and the **Variables** tab for the App ID. The private key must
+private key and the **Variables** tab for the Client ID. The private key must
 never be committed or pasted into workflow YAML.
 
 If the repository restricts allowed actions, add
