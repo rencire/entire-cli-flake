@@ -11,8 +11,8 @@
 }:
 
 let
-  goVersion = "1.26.5";
-  goSrcHash = "sha256-SVvkvIcXasVnOS5bQRar2YRm0z17SdQedkzMaXay3EI=";
+  goVersion = "1.26.6";
+  goSrcHash = "sha256-oHIcVMaIkBRI13rZs+x+p8R0cwdV/4kTgukuy5P/LLE=";
 
   pinnedGo = go_1_26.overrideAttrs (_: {
     version = goVersion;
@@ -26,16 +26,16 @@ let
 in
 buildGoModule (finalAttrs: {
   pname = "entire";
-  version = "0.10.0";
+  version = "0.10.1";
 
   src = fetchFromGitHub {
     owner = "entireio";
     repo = "cli";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-PeCzPnIoeeyNsGqY7SXKykv8qmt2rY/3bQG0xqcPDP0=";
+    hash = "sha256-L+xR1PGQU1/9EI7+n1Xese+jZeoHRpVsfkBKAdNduDQ=";
   };
 
-  vendorHash = "sha256-7/SWL5axi1jJur0mGEO9dMnGO8NXT1RlUnSzz/IvE0g=";
+  vendorHash = "sha256-APft58qXT3D9tb7Op+Qi2398Fh7UMqmoISIu4yy7OsM=";
 
   subPackages = [ "cmd/entire" ];
 
