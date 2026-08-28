@@ -26,16 +26,16 @@ let
 in
 buildGoModule (finalAttrs: {
   pname = "entire";
-  version = "0.10.2";
+  version = "0.10.3";
 
   src = fetchFromGitHub {
     owner = "entireio";
     repo = "cli";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-Di9o3D7LGpIxq4XYTIDSesNsQ1Z65qdOBWsiveXdWgg=";
+    hash = "sha256-Y9uKO8guuV5h3z5Za4dBB7EdwYZjLU++Tikqh46h/JY=";
   };
 
-  vendorHash = "sha256-b+WjeqPM+NhKJZrV+2sl3Ihy6ABPR+TB82EKzqyUBYU=";
+  vendorHash = "sha256-ABhWkGtYrnRmemCh9UytPnNr9KP6XBGAJ906GVyE19s=";
 
   subPackages = [ "cmd/entire" ];
 
