@@ -35,8 +35,6 @@ or updating it.
 Important fields:
 
 - `version`: upstream `entireio/cli` release without the leading `v`.
-- `goVersion`: Go patch version required by upstream `entire`.
-- `goSrcHash`: Nix SRI hash for `go${goVersion}.src.tar.gz` from `go.dev`.
 - `src.hash`: Nix hash for the upstream `entireio/cli` release source.
 - `vendorHash`: Nix hash for the vendored Go module dependency tree.
 
@@ -45,10 +43,9 @@ Important fields:
 When updating by hand:
 
 1. Change `version` in [`nix/package.nix`](../nix/package.nix).
-2. Run `nix run .#update-go-toolchain`.
-3. Run `nix run nixpkgs#nix-update -- --flake default --version skip`.
-4. Run `nix build .#`.
-5. Inspect the diff before committing.
+2. Run `nix run nixpkgs#nix-update -- --flake default --version skip`.
+3. Run `nix build .#`.
+4. Inspect the diff before committing.
 
 Do not use `--flake entire`; this flake exposes the package as `default`.
 
@@ -60,7 +57,7 @@ release for `entireio/cli`, compares it with `nix/package.nix`, and exits when
 the package is current.
 
 When an update is available, it creates an `automation/entire-vX.Y.Z` branch,
-updates `version`, `goVersion`, `goSrcHash`, `src.hash`, and `vendorHash`, then
+updates `version`, `src.hash`, and `vendorHash`, then
 opens a PR with squash auto-merge enabled.
 
 ## Updater Authentication Setup
@@ -93,35 +90,20 @@ auto-merges only a successful package build.
 
 ## Go Toolchain Pin
 
-[`nix/apps/update-go-toolchain.js`](../nix/apps/update-go-toolchain.js) keeps
-the local Go source pin aligned with upstream `entire`.
+[`nix/package.nix`](../nix/package.nix) uses Nixpkgs' `buildGo127Module`
+directly. The Go compiler comes from the Nixpkgs revision pinned in
+`flake.lock`; there is no separate Go source pin or updater.
 
-The updater:
-
-1. Reads `version` from `nix/package.nix`.
-2. Fetches upstream `entireio/cli` `go.mod` for tag `v${version}`.
-3. Reads `toolchain goX.Y.Z` if present, otherwise falls back to `go X.Y.Z`.
-4. Fetches Go release metadata from `https://go.dev/dl/?mode=json&include=all`.
-5. Finds `goX.Y.Z.src.tar.gz` and converts its SHA256 to Nix SRI form.
-6. Updates only `goVersion` and `goSrcHash` in `nix/package.nix`.
-
-The updater is exposed as a Nix app by
-[`nix/apps/update-go-toolchain.nix`](../nix/apps/update-go-toolchain.nix). The
-app declares its runtime dependencies through Nix and uses only Bun built-ins
-plus `nix hash convert`; it does not pull npm packages.
-
-The updater currently supports automatic Go `1.26.x` patch updates. If upstream
-`entire` moves to a new Go minor family, the updater fails clearly so the Nix
-package can be adjusted deliberately.
+To pick up newer Go `1.27.x` patch releases, run `nix flake update nixpkgs`
+and rebuild. If upstream `entire` requires a newer Go minor family, update
+Nixpkgs and switch to the corresponding `buildGoXYZModule` in `nix/package.nix`.
+Review the lockfile diff and verify the package build before committing.
 
 ## Failure Modes
 
-- If `nix-update` reports that `go.mod requires go >= ...`, run
-  `nix run .#update-go-toolchain` before retrying.
-- If the updater says a Go version is unsupported, update `nix/package.nix` to
-  use the matching Nixpkgs Go family before expanding the automation.
-- If Go release metadata does not list the requested source tarball, upstream
-  `entire` may require a Go release that is not published yet.
+- If `nix-update` reports that `go.mod requires go >= ...`, update the Nixpkgs
+  lock and, for a newer minor release, the Go builder in `nix/package.nix`
+  before retrying. Nixpkgs must provide a compiler meeting that requirement.
 - If the workflow tries `--flake entire`, change it back to `--flake default`.
 
 ## Verification
@@ -129,16 +111,10 @@ package can be adjusted deliberately.
 Use these checks for package maintenance changes:
 
 ```bash
-nix run .#update-go-toolchain
 nix run nixpkgs#nix-update -- --flake default --version skip
 nix build .#
 git diff --check
 ```
-
-For an updater-style smoke test, temporarily change `version` in
-`nix/package.nix`, run `nix run .#update-go-toolchain`, inspect `goVersion` and
-`goSrcHash`, then restore the version before committing unless the version bump
-is intentional.
 
 ## Related Docs
 
