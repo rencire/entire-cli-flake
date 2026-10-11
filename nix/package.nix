@@ -1,30 +1,14 @@
 { lib
-, buildGo126Module
+, buildGo127Module
 , fetchFromGitHub
-, fetchurl
 , installShellFiles
 , git
-, go_1_26
 , stdenv
 , writableTmpDirAsHomeHook
 ,
 }:
 
-let
-  goVersion = "1.26.6";
-  goSrcHash = "sha256-oHIcVMaIkBRI13rZs+x+p8R0cwdV/4kTgukuy5P/LLE=";
-
-  pinnedGo = go_1_26.overrideAttrs (_: {
-    version = goVersion;
-    src = fetchurl {
-      url = "https://go.dev/dl/go${goVersion}.src.tar.gz";
-      hash = goSrcHash;
-    };
-  });
-
-  buildGoModule = buildGo126Module.override { go = pinnedGo; };
-in
-buildGoModule (finalAttrs: {
+buildGo127Module (finalAttrs: {
   pname = "entire";
   version = "0.10.6";
 

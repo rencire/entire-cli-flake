@@ -1,7 +1,7 @@
 {
   description = "A flake for local LLM agent workflows";
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flakelight = {
       url = "github:accelbread/flakelight";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -38,6 +38,7 @@
     { flakelight, ... }@inputs:
     flakelight ./. {
       inherit inputs;
+      nixpkgs.config.allowUnfree = true;
       systems = [
         "aarch64-darwin"
         "aarch64-linux"
