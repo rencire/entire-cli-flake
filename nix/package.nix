@@ -10,16 +10,16 @@
 
 buildGo127Module (finalAttrs: {
   pname = "entire";
-  version = "0.10.6";
+  version = "0.11.4";
 
   src = fetchFromGitHub {
     owner = "entireio";
     repo = "cli";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-l2elFxZi01SO6zrRGxKNoU50ELtrX8G4YTMnxbpdBqE=";
+    hash = "sha256-65XZrLXPkr2Sdoljo0dcXPfZPBl5S49SLfkIo6qsfY8=";
   };
 
-  vendorHash = "sha256-3LWRfnyT3OgHsu4SA2cGtCJizjDRolZQs75yjBA4tXc=";
+  vendorHash = "sha256-VvHoCxuDL7l/rXx4IB8grQmJ457qG/LURc+yxT4YIjY=";
 
   subPackages = [ "cmd/entire" ];
 
