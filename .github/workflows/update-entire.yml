@@ -80,6 +80,7 @@ jobs:
         run: |
           git switch -c "${{ steps.branch.outputs.name }}"
           perl -0pi -e 's/^  version = "[^"]+";/  version = "${{ steps.release.outputs.version }}";/m' nix/package.nix
+          nix run .#update-go-toolchain
           nix run nixpkgs#nix-update -- --flake default --version skip
 
       - name: Create update pull request
