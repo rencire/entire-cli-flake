@@ -1,6 +1,8 @@
 { lib
 , buildGo127Module
 , fetchFromGitHub
+, fetchurl
+, go_1_27
 , installShellFiles
 , git
 , stdenv
@@ -8,7 +10,21 @@
 ,
 }:
 
-buildGo127Module (finalAttrs: {
+let
+  goVersion = "1.27.3";
+  goSrcHash = "sha256-bndJA1zzYPBrJXXRYup535/ajvZxiJ5cN1+OUHd/Jrs=";
+
+  # Keep patch updates independent of the consumer's Nixpkgs revision.
+  pinnedGo = go_1_27.overrideAttrs (_: {
+    version = goVersion;
+    src = fetchurl {
+      url = "https://go.dev/dl/go${goVersion}.src.tar.gz";
+      hash = goSrcHash;
+    };
+  });
+  buildGoModule = buildGo127Module.override { go = pinnedGo; };
+in
+buildGoModule (finalAttrs: {
   pname = "entire";
   version = "0.11.5";
 

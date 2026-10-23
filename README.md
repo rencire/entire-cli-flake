@@ -78,7 +78,8 @@ opens a complete PR and auto-merges it after `nix build .#` passes. To update by
 hand:
 
 1. Update `version` in [`nix/package.nix`](./nix/package.nix).
-2. Run `nix run nixpkgs#nix-update -- --flake default --version skip` to refresh
+2. Run `nix run .#update-go-toolchain` to satisfy upstream's Go requirement.
+3. Run `nix run nixpkgs#nix-update -- --flake default --version skip` to refresh
    `hash` and `vendorHash`.
 
 See [`docs/package-maintenance.md`](./docs/package-maintenance.md) for the full
